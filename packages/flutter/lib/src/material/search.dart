@@ -67,7 +67,8 @@ Future<T?> showSearch<T>({
   assert(useRootNavigator != null);
   delegate.query = query ?? delegate.query;
   delegate._currentBody = _SearchBody.suggestions;
-  return Navigator.of(context, rootNavigator: useRootNavigator).push(_SearchPageRoute<T>(
+  return Navigator.of(context, rootNavigator: useRootNavigator)
+      .push(_SearchPageRoute<T>(
     delegate: delegate,
   ));
 }
@@ -141,6 +142,7 @@ abstract class SearchDelegate<T> {
   /// {@end-tool}
   SearchDelegate({
     this.searchFieldLabel,
+    this.searchFieldHint,
     this.searchFieldStyle,
     this.searchFieldDecorationTheme,
     this.keyboardType,
@@ -237,7 +239,9 @@ abstract class SearchDelegate<T> {
     return theme.copyWith(
       appBarTheme: AppBarTheme(
         brightness: colorScheme.brightness,
-        backgroundColor: colorScheme.brightness == Brightness.dark ? Colors.grey[900] : Colors.white,
+        backgroundColor: colorScheme.brightness == Brightness.dark
+            ? Colors.grey[900]
+            : Colors.white,
         iconTheme: theme.primaryIconTheme.copyWith(color: Colors.grey),
         textTheme: theme.textTheme,
       ),
@@ -264,7 +268,8 @@ abstract class SearchDelegate<T> {
     assert(query != null);
     _queryTextController.text = value;
     if (_queryTextController.text.isNotEmpty) {
-      _queryTextController.selection = TextSelection.fromPosition(TextPosition(offset: _queryTextController.text.length));
+      _queryTextController.selection = TextSelection.fromPosition(
+          TextPosition(offset: _queryTextController.text.length));
     }
   }
 
@@ -297,7 +302,8 @@ abstract class SearchDelegate<T> {
   ///
   ///  * [showResults] to show the search results.
   void showSuggestions(BuildContext context) {
-    assert(_focusNode != null, '_focusNode must be set by route before showSuggestions is called.');
+    assert(_focusNode != null,
+        '_focusNode must be set by route before showSuggestions is called.');
     _focusNode!.requestFocus();
     _currentBody = _SearchBody.suggestions;
   }
@@ -319,6 +325,7 @@ abstract class SearchDelegate<T> {
   /// If this value is set to null, the value of
   /// `MaterialLocalizations.of(context).searchFieldLabel` will be used instead.
   final String? searchFieldLabel;
+  final String? searchFieldHint;
 
   /// The style of the [searchFieldLabel].
   ///
@@ -360,9 +367,11 @@ abstract class SearchDelegate<T> {
 
   final TextEditingController _queryTextController = TextEditingController();
 
-  final ProxyAnimation _proxyAnimation = ProxyAnimation(kAlwaysDismissedAnimation);
+  final ProxyAnimation _proxyAnimation =
+      ProxyAnimation(kAlwaysDismissedAnimation);
 
-  final ValueNotifier<_SearchBody?> _currentBodyNotifier = ValueNotifier<_SearchBody?>(null);
+  final ValueNotifier<_SearchBody?> _currentBodyNotifier =
+      ValueNotifier<_SearchBody?>(null);
 
   _SearchBody? get _currentBody => _currentBodyNotifier.value;
   set _currentBody(_SearchBody? value) {
@@ -508,7 +517,8 @@ class _SearchPageState<T> extends State<_SearchPage<T>> {
     if (widget.delegate != oldWidget.delegate) {
       oldWidget.delegate._queryTextController.removeListener(_onQueryChanged);
       widget.delegate._queryTextController.addListener(_onQueryChanged);
-      oldWidget.delegate._currentBodyNotifier.removeListener(_onSearchBodyChanged);
+      oldWidget.delegate._currentBodyNotifier
+          .removeListener(_onSearchBodyChanged);
       widget.delegate._currentBodyNotifier.addListener(_onSearchBodyChanged);
       oldWidget.delegate._focusNode = null;
       widget.delegate._focusNode = focusNode;
@@ -516,7 +526,8 @@ class _SearchPageState<T> extends State<_SearchPage<T>> {
   }
 
   void _onFocusChanged() {
-    if (focusNode.hasFocus && widget.delegate._currentBody != _SearchBody.suggestions) {
+    if (focusNode.hasFocus &&
+        widget.delegate._currentBody != _SearchBody.suggestions) {
       widget.delegate.showSuggestions(context);
     }
   }
@@ -537,10 +548,12 @@ class _SearchPageState<T> extends State<_SearchPage<T>> {
   Widget build(BuildContext context) {
     assert(debugCheckHasMaterialLocalizations(context));
     final ThemeData theme = widget.delegate.appBarTheme(context);
-    final String searchFieldLabel = widget.delegate.searchFieldLabel
-      ?? MaterialLocalizations.of(context).searchFieldLabel;
+    final String searchFieldLabel = widget.delegate.searchFieldLabel ??
+        MaterialLocalizations.of(context).searchFieldLabel;
+    final String searchFieldHint = widget.delegate.searchFieldHint ??
+        MaterialLocalizations.of(context).searchFieldLabel;
     Widget? body;
-    switch(widget.delegate._currentBody) {
+    switch (widget.delegate._currentBody) {
       case _SearchBody.suggestions:
         body = KeyedSubtree(
           key: const ValueKey<_SearchBody>(_SearchBody.suggestions),
@@ -580,23 +593,58 @@ class _SearchPageState<T> extends State<_SearchPage<T>> {
         child: Scaffold(
           appBar: AppBar(
             leading: widget.delegate.buildLeading(context),
-            title: TextField(
-              controller: widget.delegate._queryTextController,
-              focusNode: focusNode,
-              style: widget.delegate.searchFieldStyle ?? theme.textTheme.titleLarge,
-              textInputAction: widget.delegate.textInputAction,
-              keyboardType: widget.delegate.keyboardType,
-              onSubmitted: (String _) {
-                widget.delegate.showResults(context);
-              },
-              decoration: InputDecoration(hintText: searchFieldLabel),
+            title: Center(
+              child: Text(
+                searchFieldLabel,
+                style: Theme.of(context).textTheme.headline4,
+              ),
             ),
             actions: widget.delegate.buildActions(context),
             bottom: widget.delegate.buildBottom(context),
           ),
           body: AnimatedSwitcher(
             duration: const Duration(milliseconds: 300),
-            child: body,
+            child: Column(
+              children: [
+                Padding(
+                  padding: EdgeInsets.all(8),
+                  child: SizedBox(
+                    height: 70,
+                    width: MediaQuery.of(context).size.width,
+                    child: TextField(
+                      controller: widget.delegate._queryTextController,
+                      //focusNode: focusNode,
+                      style: widget.delegate.searchFieldStyle ??
+                          theme.textTheme.headline6,
+                      textInputAction: widget.delegate.textInputAction,
+                      keyboardType: widget.delegate.keyboardType,
+                      onSubmitted: (String _) {
+                        widget.delegate.showResults(context);
+                      },
+                      decoration: InputDecoration(
+                        filled: true,
+                        fillColor: Theme.of(context).highlightColor,
+                        hintText: searchFieldHint,
+                        hintStyle: widget.delegate.searchFieldStyle ??
+                            theme.textTheme.headline6!.copyWith(
+                                color: Theme.of(context).dividerColor),
+                        focusedBorder: OutlineInputBorder(
+                          borderSide:
+                              BorderSide(color: Theme.of(context).dividerColor),
+                        ),
+                        enabledBorder: OutlineInputBorder(
+                          borderSide: BorderSide(
+                              color: Theme.of(context).highlightColor),
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+                Expanded(
+                  child: body ?? Container(),
+                ),
+              ],
+            ),
           ),
         ),
       ),
