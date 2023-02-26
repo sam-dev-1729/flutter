@@ -1,6 +1,7 @@
 // Copyright 2014 The Flutter Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
+//
 
 // The widget in this file is an empty mock for non-web platforms. See
 // `_platform_selectable_region_context_menu_web.dart` for the web
@@ -31,10 +32,12 @@ class PlatformSelectableRegionContextMenu extends StatelessWidget {
   });
 
   /// Attaches the `client` to be able to open platform-appropriate context menus.
-  static void attach(SelectionContainerDelegate client) => throw UnimplementedError();
+  static void attach(SelectionContainerDelegate client) =>
+      throw UnimplementedError();
 
   /// Detaches the `client` from the platform-appropriate selection context menus.
-  static void detach(SelectionContainerDelegate client) => throw UnimplementedError();
+  static void detach(SelectionContainerDelegate client) =>
+      throw UnimplementedError();
 
   @override
   Widget build(BuildContext context) => throw UnimplementedError();
