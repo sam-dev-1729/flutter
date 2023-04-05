@@ -409,9 +409,10 @@ class _ExpansionTileState extends State<ExpansionTile>
         ExpansionTileTheme.of(context);
     final ShapeBorder expansionTileBorder = _border.value ??
         const Border(
-          top: BorderSide(color: Colors.transparent),
+            /*    top: BorderSide(color: Colors.transparent),
           bottom: BorderSide(color: Colors.transparent),
-        );
+         */
+            );
     final Clip clipBehavior =
         widget.clipBehavior ?? expansionTileTheme.clipBehavior ?? Clip.none;
 
@@ -421,7 +422,7 @@ class _ExpansionTileState extends State<ExpansionTile>
         color: _backgroundColor.value ??
             expansionTileTheme.backgroundColor ??
             Colors.transparent,
-        // shape: expansionTileBorder,
+        shape: expansionTileBorder,
       ),
       child: Column(
         mainAxisSize: MainAxisSize.min,

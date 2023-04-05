@@ -607,7 +607,8 @@ class _SearchPageState<T> extends State<_SearchPage<T>> {
             child: Column(
               children: [
                 Padding(
-                  padding: EdgeInsets.all(8),
+                  padding:
+                      EdgeInsets.only(left: 12, right: 12, bottom: 8, top: 8),
                   child: SizedBox(
                     height: 70,
                     width: MediaQuery.of(context).size.width,
